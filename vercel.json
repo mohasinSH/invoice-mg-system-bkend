@@ -7,11 +7,7 @@
       }
     ],
     "env": {
-      "DB_HOST": "@db_host",
-      "DB_USER": "@db_user",
-      "DB_PASSWORD": "@db_password",
-      "DB_NAME": "@db_name",
-      "DB_PORT": "@db_port"
+        "DATABASE_URL" : "postgresql://aws_znch_user:bwFG5gRvVI3pOKCue4jJJOY8l5mdDK4f@dpg-cs9v63g8fa8c73ci2plg-a.virginia-postgres.render.com/aws_znch"
     },
     "routes": [
       {
