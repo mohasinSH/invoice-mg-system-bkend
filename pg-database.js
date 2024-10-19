@@ -66,7 +66,9 @@ pool.connect((err, client, release) => {
     });
   });
 });
-
+app.get('/',(req,res)=>{
+  res.send("hello")
+})
 
 // Fetch all companies
 app.get('/company', async (req, res) => {
