@@ -3,7 +3,8 @@ const { Pool } = require('pg');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 require('dotenv').config(); // Load environment variables from .env file
-
+const fs = require('fs');
+const path = require('path');
 const app = express();
 const port = 8000;
 
@@ -14,25 +15,57 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // PostgreSQL connection setup
+// const pool = new Pool({
+//   host: process.env.DB_HOST,
+//   user: process.env.DB_USER,
+//   password: process.env.DB_PASSWORD,
+//   database: process.env.DB_NAME,
+//   port: process.env.DB_PORT,
+//   ssl: {
+//     rejectUnauthorized: false, // This allows self-signed certificates
+//   },
+// });
+
 const pool = new Pool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
+  connectionString: process.env.DATABASE_URL || 'your-internal-or-external-url',
   ssl: {
-    rejectUnauthorized: false, // This allows self-signed certificates
-  },
+    rejectUnauthorized: false // For handling SSL certificates on Render
+  }
 });
 console.log(process.env.DB_NAME)
 // Test the database connection
-pool.connect()
-  .then(() => {
-    console.log('Database connected successfully!');
-  })
-  .catch(err => {
-    console.error('Database connection error:', err);
+pool.connect((err, client, release) => {
+  if (err) {
+    return console.error('Error connecting to the database', err.stack);
+  }
+
+  console.log('Connected to the database');
+
+  // Path to the schema.sql file in the same directory
+  const sqlFilePath = path.join(__dirname, 'schema.sql');
+
+  // Read the SQL file
+  fs.readFile(sqlFilePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading SQL file', err);
+      return;
+    }
+
+    // Execute the SQL file's contents
+    client.query(data, (err, res) => {
+      release(); // Release the client back to the pool
+
+      if (err) {
+        console.error('Error executing SQL query', err.stack);
+      } else {
+        console.log('SQL file executed successfully:', res);
+      }
+
+      
+     
+    });
   });
+});
 
 
 // Fetch all companies

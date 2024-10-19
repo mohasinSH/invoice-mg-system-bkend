@@ -34,13 +34,15 @@ CREATE TABLE IF NOT EXISTS customer (
   company_name VARCHAR(255)
 );
 
-CREATE TABLE users (
-    id SERIAL PRIMARY KEY, -- Unique identifier for each user
-    username VARCHAR(50) NOT NULL UNIQUE, -- Username, must be unique
-    password VARCHAR(255) NOT NULL, -- Hashed password
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Timestamp for user creation
+-- Create the 'users' table
+CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY, -- Unique identifier for each user
+  username VARCHAR(50) NOT NULL UNIQUE, -- Username, must be unique
+  password VARCHAR(255) NOT NULL, -- Hashed password
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Timestamp for user creation
 );
 
-
+-- Insert a default user into the 'users' table, only if it doesn't already exist
 INSERT INTO users (username, password)
-VALUES ('root', 'admin');
+SELECT 'root', 'admin'
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'root');
