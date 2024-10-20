@@ -1,4 +1,4 @@
--- Create the 'company' table
+
 CREATE TABLE IF NOT EXISTS company (
   company_id SERIAL PRIMARY KEY,
   company_name VARCHAR(255) NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS company (
   company_total NUMERIC(10, 2)
 );
 
--- Create the 'invoice' table
+
 CREATE TABLE IF NOT EXISTS invoice (
   invoice_id SERIAL PRIMARY KEY,
   company_name VARCHAR(255) NOT NULL,
@@ -27,22 +27,22 @@ CREATE TABLE IF NOT EXISTS invoice (
   bill_amount NUMERIC(10, 2) NOT NULL
 );
 
--- Create the 'customer' table
+
 CREATE TABLE IF NOT EXISTS customer (
   customer_id SERIAL PRIMARY KEY,
   customer_name VARCHAR(255) NOT NULL,
   company_name VARCHAR(255)
 );
 
--- Create the 'users' table
+
 CREATE TABLE IF NOT EXISTS users (
-  id SERIAL PRIMARY KEY, -- Unique identifier for each user
-  username VARCHAR(50) NOT NULL UNIQUE, -- Username, must be unique
-  password VARCHAR(255) NOT NULL, -- Hashed password
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Timestamp for user creation
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(50) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL, 
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insert a default user into the 'users' table, only if it doesn't already exist
+
 INSERT INTO users (username, password)
 SELECT 'root', 'admin'
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'root');

@@ -2,16 +2,16 @@ const express = require('express');
 const { Pool } = require('pg');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-require('dotenv').config(); // Load environment variables from .env file
+require('dotenv').config(); 
 const fs = require('fs');
 const path = require('path');
 const app = express();
 const port = 8000;
 
-// Middleware for parsing JSON bodies
+
 app.use(bodyParser.json());
 
-// Enable CORS for all routes
+
 app.use(cors());
 
 // PostgreSQL connection setup
@@ -22,18 +22,18 @@ app.use(cors());
 //   database: process.env.DB_NAME,
 //   port: process.env.DB_PORT,
 //   ssl: {
-//     rejectUnauthorized: false, // This allows self-signed certificates
+//     rejectUnauthorized: false,
 //   },
 // });
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'your-internal-or-external-url',
   ssl: {
-    rejectUnauthorized: false // For handling SSL certificates on Render
+    rejectUnauthorized: false 
   }
 });
 console.log(process.env.DB_NAME)
-// Test the database connection
+
 pool.connect((err, client, release) => {
   if (err) {
     return console.error('Error connecting to the database', err.stack);
@@ -41,19 +41,19 @@ pool.connect((err, client, release) => {
 
   console.log('Connected to the database');
 
-  // Path to the schema.sql file in the same directory
+ 
   const sqlFilePath = path.join(__dirname, 'schema.sql');
 
-  // Read the SQL file
+
   fs.readFile(sqlFilePath, 'utf8', (err, data) => {
     if (err) {
       console.error('Error reading SQL file', err);
       return;
     }
 
-    // Execute the SQL file's contents
+
     client.query(data, (err, res) => {
-      release(); // Release the client back to the pool
+      release(); 
 
       if (err) {
         console.error('Error executing SQL query', err.stack);
@@ -70,7 +70,7 @@ app.get('/',(req,res)=>{
   res.send("hello")
 })
 
-// Fetch all companies
+
 app.get('/company', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM company');
@@ -80,7 +80,7 @@ app.get('/company', async (req, res) => {
   }
 });
 
-// Fetch company by ID
+
 app.get('/company/:id', async (req, res) => {
   const companyId = req.params.id;
   try {
@@ -94,7 +94,7 @@ app.get('/company/:id', async (req, res) => {
   }
 });
 
-// Insert a new company
+
 app.post('/company', async (req, res) => {
     const {
       company_name,
@@ -135,7 +135,7 @@ app.post('/company', async (req, res) => {
   });
   
 
-// Update an existing company
+
 app.put('/company/:company_id', async (req, res) => {
   const companyId = req.params.company_id;
   const {
@@ -178,7 +178,7 @@ app.put('/company/:company_id', async (req, res) => {
   }
 });
 
-// Delete a company by ID
+
 app.delete('/company/:company_id', async (req, res) => {
   const companyId = req.params.company_id;
   const query = 'DELETE FROM company WHERE company_id = $1';
@@ -194,9 +194,7 @@ app.delete('/company/:company_id', async (req, res) => {
   }
 });
 
-// ==================== INVOICE ENDPOINTS ==================== //
 
-// Fetch all invoices
 app.get('/invoice', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM invoice');
@@ -206,7 +204,7 @@ app.get('/invoice', async (req, res) => {
   }
 });
 
-// Fetch invoice by ID
+
 app.get('/invoice/:invoice_id', async (req, res) => {
   const invoiceId = req.params.invoice_id;
   try {
@@ -220,7 +218,6 @@ app.get('/invoice/:invoice_id', async (req, res) => {
   }
 });
 
-// Insert a new invoice
 app.post('/invoice', async (req, res) => {
   const {
     company_name,
@@ -241,7 +238,7 @@ app.post('/invoice', async (req, res) => {
   }
 });
 
-// Delete an invoice by ID
+
 app.delete('/invoice/:invoice_id', async (req, res) => {
   const invoiceId = req.params.invoice_id;
   const query = 'DELETE FROM invoice WHERE invoice_id = $1';
@@ -257,9 +254,6 @@ app.delete('/invoice/:invoice_id', async (req, res) => {
   }
 });
 
-// ==================== CUSTOMER ENDPOINTS ==================== //
-
-// Fetch all customers
 app.get('/customer', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM customer');
@@ -269,7 +263,7 @@ app.get('/customer', async (req, res) => {
   }
 });
 
-// Fetch customer by ID
+
 app.get('/customer/:customer_id', async (req, res) => {
   const customerId = req.params.customer_id;
   try {
@@ -283,7 +277,6 @@ app.get('/customer/:customer_id', async (req, res) => {
   }
 });
 
-// Insert a new customer
 app.post('/customer', async (req, res) => {
   const { customer_name, company_name } = req.body;
 
@@ -298,7 +291,6 @@ app.post('/customer', async (req, res) => {
   }
 });
 
-// Delete a customer by ID
 app.delete('/customer/:customer_id', async (req, res) => {
   const customerId = req.params.customer_id;
   const query = 'DELETE FROM customer WHERE customer_id = $1';
@@ -315,10 +307,10 @@ app.delete('/customer/:customer_id', async (req, res) => {
 });
 
 app.put('/company/set-total/:id', async (req, res) => {
-    const companyId = req.params.id; // Extract company ID from URL parameters
-    const { bill_amount } = req.body; // Extract bill amount from the request body
+    const companyId = req.params.id; 
+    const { bill_amount } = req.body; 
 
-    // Check if bill_amount is provided and is a valid number
+
     if (typeof bill_amount !== 'number' || bill_amount < 0) {
         return res.status(400).json({ error: 'Invalid bill amount' });
     }
@@ -344,7 +336,7 @@ app.put('/company/set-total/:id', async (req, res) => {
 });
 
 
-// Start the server
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
